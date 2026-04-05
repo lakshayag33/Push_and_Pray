@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}VitalSync — AI Health Assistant{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="hero-badge mb-4">
+                <span class="badge rounded-pill px-3 py-2">
+                    <i class="bi bi-stars me-1"></i> AI-Powered Health Insights
+                </span>
+            </div>
+            <h1 class="display-3 fw-800 mb-4 hero-title">
+                Your Health,<br>
+                <span class="gradient-text">Decoded Daily</span>
+            </h1>
+            <p class="lead text-muted mb-5 mx-auto" style="max-width: 600px;">
+                Track your daily habits, get a personalized health score, and receive
+                AI-driven suggestions to optimize your wellness — all in under 5 minutes.
+            </p>
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg rounded-pill px-5 glow-btn" id="cta-register">
+                    <i class="bi bi-rocket-takeoff-fill me-2"></i>Start Free
+                </a>
+                <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-lg rounded-pill px-5" id="cta-login">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 mt-4">
+    <div class="text-center mb-5">
+        <h2 class="fw-700 mb-2">How It Works</h2>
+        <p class="text-muted">Three simple steps to a healthier you</p>
+    </div>
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="glass-card feature-card text-center p-4 h-100" id="feature-track">
+                <div class="feature-icon-wrap mb-3">
+                    <i class="bi bi-clipboard2-pulse feature-icon"></i>
+                </div>
+                <h5 class="fw-600">Daily Health Quiz</h5>
+                <p class="text-muted small mb-0">
+                    Answer quick questions about sleep, nutrition, activity, and mood.
+                    Takes less than 3 minutes.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card feature-card text-center p-4 h-100" id="feature-score">
+                <div class="feature-icon-wrap mb-3">
+                    <i class="bi bi-speedometer2 feature-icon"></i>
+                </div>
+                <h5 class="fw-600">Smart Health Score</h5>
+                <p class="text-muted small mb-0">
+                    Get a 0–100 score calculated across 10 health parameters
+                    with beautiful trend charts.
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="glass-card feature-card text-center p-4 h-100" id="feature-ai">
+                <div class="feature-icon-wrap mb-3">
+                    <i class="bi bi-robot feature-icon"></i>
+                </div>
+                <h5 class="fw-600">AI Suggestions</h5>
+                <p class="text-muted small mb-0">
+                    Receive personalized, context-aware recommendations
+                    powered by Google Gemini AI.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Extra Features Row -->
+<section class="py-5">
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100 d-flex align-items-start gap-3" id="feature-chat">
+                <div class="feature-icon-sm">
+                    <i class="bi bi-chat-dots-fill"></i>
+                </div>
+                <div>
+                    <h5 class="fw-600 mb-2">Health Chat Assistant</h5>
+                    <p class="text-muted small mb-0">
+                        Chat with an AI assistant that knows your health data. Ask about trends,
+                        get advice, and understand your habits better.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-card p-4 h-100 d-flex align-items-start gap-3" id="feature-share">
+                <div class="feature-icon-sm">
+                    <i class="bi bi-share-fill"></i>
+                </div>
+                <div>
+                    <h5 class="fw-600 mb-2">Share with Reviewers</h5>
+                    <p class="text-muted small mb-0">
+                        Optionally share your progress charts with approved health reviewers.
+                        You control access — revoke anytime.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Bottom -->
+<section class="text-center py-5 mb-3">
+    <div class="glass-card cta-card p-5">
+        <h3 class="fw-700 mb-3">Ready to take control of your health?</h3>
+        <p class="text-muted mb-4">Join now and start tracking your wellness journey today.</p>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg rounded-pill px-5 glow-btn" id="cta-bottom-register">
+            <i class="bi bi-person-plus-fill me-2"></i>Create Free Account
+        </a>
+    </div>
+</section>
+{% endblock %}

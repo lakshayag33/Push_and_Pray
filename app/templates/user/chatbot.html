@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Health Assistant — VitalSync{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card chatbot-container fade-in" id="chatbot-container">
+            <!-- Header -->
+            <div class="chatbot-header p-3">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="chatbot-avatar">
+                        <i class="bi bi-robot"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-600 mb-0">Health Assistant</h5>
+                        <span class="text-muted small"><i class="bi bi-circle-fill text-success me-1" style="font-size:8px"></i>Online</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Urgent Alert -->
+            <div class="alert alert-danger m-3 d-none glass-alert" id="urgent-alert">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                <strong>We suggest seeing a doctor.</strong>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="chatbot-messages p-3" id="chat-messages">
+                <div class="chat-bubble assistant">
+                    <div class="bubble-content">
+                        <p class="mb-0">Hello! I'm your personal health assistant. I have access to your health data and can help you understand your trends. What would you like to know about your health today?</p>
+                    </div>
+                    <span class="bubble-time">Just now</span>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="chatbot-input p-3">
+                <form id="chat-form" class="d-flex gap-2">
+                    <input type="text" class="form-control glass-input" id="chat-input"
+                           placeholder="Ask about your health..." autocomplete="off" required>
+                    <button type="submit" class="btn btn-primary rounded-pill px-3 glow-btn" id="chat-send">
+                        <i class="bi bi-send-fill"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+{% endblock %}

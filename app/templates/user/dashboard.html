@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — VitalSync{% endblock %}
+
+{% block content %}
+<!-- AI Suggestion Banner -->
+{% if suggestion_text %}
+<div class="alert {% if suggestion_urgent %}alert-danger{% elif suggestion_status == 'excellent' %}alert-success{% elif suggestion_status == 'good' %}alert-info{% else %}alert-warning{% endif %} glass-alert d-flex align-items-start gap-3 mb-4 fade-in" id="suggestion-banner">
+    <div class="flex-shrink-0 mt-1">
+        {% if suggestion_urgent %}
+            <i class="bi bi-exclamation-octagon-fill fs-4"></i>
+        {% elif suggestion_status == 'excellent' %}
+            <i class="bi bi-trophy-fill fs-4"></i>
+        {% elif suggestion_status == 'good' %}
+            <i class="bi bi-check-circle-fill fs-4"></i>
+        {% else %}
+            <i class="bi bi-lightbulb-fill fs-4"></i>
+        {% endif %}
+    </div>
+    <div>
+        <h6 class="fw-600 mb-1">
+            {% if suggestion_urgent %}⚠️ Important Health Alert{% elif suggestion_status == 'excellent' %}Excellent Work!{% elif suggestion_status == 'good' %}Today's Insight{% else %}Room for Improvement{% endif %}
+        </h6>
+        <p class="mb-0 small">{{ suggestion_text }}</p>
+        {% if suggestion_urgent %}
+            <p class="mb-0 mt-2 fw-600 text-danger"><i class="bi bi-hospital me-1"></i>We suggest seeing a doctor.</p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+
+<!-- Score Section -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="glass-card score-card text-center p-4 h-100 fade-in" id="score-display">
+            <h6 class="text-muted fw-500 mb-3 text-uppercase ls-1">Today's Health Score</h6>
+            {% if score is not none %}
+                <div class="score-circle mx-auto mb-3
+                    {% if score >= 85 %}score-excellent{% elif score >= 60 %}score-good{% else %}score-needs-improvement{% endif %}">
+                    <span class="score-value">{{ score }}</span>
+                    <span class="score-label">/ 100</span>
+                </div>
+                <span class="badge rounded-pill px-3 py-2
+                    {% if suggestion_status == 'excellent' %}bg-success{% elif suggestion_status == 'good' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                    {% if suggestion_status == 'excellent' %}
+                        <i class="bi bi-star-fill me-1"></i>Excellent
+                    {% elif suggestion_status == 'good' %}
+                        <i class="bi bi-hand-thumbs-up-fill me-1"></i>Good
+                    {% else %}
+                        <i class="bi bi-arrow-up-circle-fill me-1"></i>Needs Improvement
+                    {% endif %}
+                </span>
+            {% else %}
+                <div class="score-circle score-placeholder mx-auto mb-3">
+                    <span class="score-value">—</span>
+                </div>
+                <p class="text-muted small mb-0">Take today's quiz to get your score</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Action Cards -->
+    <div class="col-lg-8">
+        <div class="row g-4 h-100">
+            <div class="col-sm-6">
+                <div class="glass-card action-card p-4 h-100 fade-in" id="card-quiz">
+                    <div class="action-icon-wrap mb-3">
+                        <i class="bi bi-clipboard2-pulse action-icon"></i>
+                    </div>
+                    <h5 class="fw-600 mb-2">Daily Health Quiz</h5>
+                    {% if quiz_taken_today %}
+                        <p class="text-muted small mb-3">
+                            <i class="bi bi-check-circle-fill text-success me-1"></i>
+                            Already submitted today. Come back tomorrow.
+                        </p>
+                        <button class="btn btn-outline-secondary rounded-pill btn-sm px-4" disabled>
+                            <i class="bi bi-check-lg me-1"></i>Completed
+                        </button>
+                    {% else %}
+                        <p class="text-muted small mb-3">
+                            Log your habits and get an AI-powered health assessment in minutes.
+                        </p>
+                        <a href="{{ url_for('user.quiz') }}" class="btn btn-primary rounded-pill btn-sm px-4 glow-btn">
+                            <i class="bi bi-pencil-square me-1"></i>Take Quiz
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="col-sm-6">
+                <div class="glass-card action-card p-4 h-100 fade-in" id="card-chatbot">
+                    <div class="action-icon-wrap mb-3 chatbot-icon">
+                        <i class="bi bi-chat-dots-fill action-icon"></i>
+                    </div>
+                    <h5 class="fw-600 mb-2">Health Assistant</h5>
+                    <p class="text-muted small mb-3">
+                        Chat with your personal AI health assistant about your trends and habits.
+                    </p>
+                    <a href="{{ url_for('user.chatbot') }}" class="btn btn-outline-primary rounded-pill btn-sm px-4">
+                        <i class="bi bi-chat-dots me-1"></i>Open Chat
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section -->
+<div class="mb-4">
+    <h5 class="fw-600 mb-3"><i class="bi bi-graph-up-arrow me-2"></i>7-Day Trends</h5>
+    {% if has_data %}
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="glass-card p-4" id="chart-sleep-card">
+                <h6 class="text-muted fw-500 mb-3"><i class="bi bi-moon-stars-fill me-2"></i>Sleep Hours</h6>
+                <canvas id="chart-sleep" height="200"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-card p-4" id="chart-steps-card">
+                <h6 class="text-muted fw-500 mb-3"><i class="bi bi-shoe-fill me-2 text-warning"></i>Steps</h6>
+                <canvas id="chart-steps" height="200"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-card p-4" id="chart-mood-card">
+                <h6 class="text-muted fw-500 mb-3"><i class="bi bi-emoji-smile-fill me-2 text-info"></i>Mood</h6>
+                <canvas id="chart-mood" height="200"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="glass-card p-4" id="chart-stress-card">
+                <h6 class="text-muted fw-500 mb-3"><i class="bi bi-lightning-fill me-2 text-danger"></i>Stress Level</h6>
+                <canvas id="chart-stress" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="glass-card p-5 text-center" id="empty-state">
+        <i class="bi bi-bar-chart-line display-1 text-muted mb-3 d-block"></i>
+        <h5 class="fw-600 mb-2">No data found yet</h5>
+        <p class="text-muted mb-3">Take today's quiz to get started and see your health trends here.</p>
+        <a href="{{ url_for('user.quiz') }}" class="btn btn-primary rounded-pill px-4 glow-btn">
+            <i class="bi bi-pencil-square me-1"></i>Take Today's Quiz
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Reviewer Invitations Section -->
+<div class="mb-4">
+    <h5 class="fw-600 mb-3"><i class="bi bi-people-fill me-2"></i>Reviewer Invitations</h5>
+    <div class="glass-card p-4">
+        <form method="POST" action="{{ url_for('user.invite_reviewer') }}" class="row g-3 align-items-end mb-4" id="invite-form">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <div class="col-md-8">
+                <label for="reviewer_email" class="form-label small fw-500">Invite a Reviewer by Email</label>
+                <input type="email" class="form-control glass-input" id="reviewer_email" name="reviewer_email"
+                       placeholder="reviewer@example.com" required>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-outline-primary rounded-pill w-100">
+                    <i class="bi bi-send-fill me-1"></i>Send Invite
+                </button>
+            </div>
+        </form>
+
+        {% if invites %}
+        <div class="table-responsive">
+            <table class="table table-dark table-borderless align-middle mb-0" id="invites-table">
+                <thead>
+                    <tr class="text-muted small text-uppercase">
+                        <th>Reviewer</th>
+                        <th>Status</th>
+                        <th>Sent</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inv in invites %}
+                    <tr>
+                        <td>
+                            <i class="bi bi-person-circle me-2"></i>{{ inv.reviewer_name }}
+                            <span class="text-muted small d-block">{{ inv.reviewer_email }}</span>
+                        </td>
+                        <td>
+                            <span class="badge rounded-pill
+                                {% if inv.status == 'accepted' %}bg-success{% elif inv.status == 'pending' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                                {{ inv.status | capitalize }}
+                            </span>
+                        </td>
+                        <td class="text-muted small">{{ inv.created_at.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            {% if inv.status != 'revoked' %}
+                            <form method="POST" action="{{ url_for('user.revoke_invite', invite_id=inv.id) }}" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3">
+                                    <i class="bi bi-x-circle me-1"></i>Revoke
+                                </button>
+                            </form>
+                            {% else %}
+                            <span class="text-muted small">Revoked</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-muted small mb-0 text-center">
+            <i class="bi bi-info-circle me-1"></i>
+            No invitations sent yet. You can optionally share your charts with a health reviewer.
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if has_data %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        loadChart('sleep', 'chart-sleep', 'Sleep Hours', 'rgba(139, 92, 246, 0.8)', 'rgba(139, 92, 246, 0.1)');
+        loadChart('steps', 'chart-steps', 'Steps', 'rgba(251, 191, 36, 0.8)', 'rgba(251, 191, 36, 0.1)');
+        loadChart('mood', 'chart-mood', 'Mood', 'rgba(56, 189, 248, 0.8)', 'rgba(56, 189, 248, 0.1)');
+        loadChart('stress', 'chart-stress', 'Stress', 'rgba(248, 113, 113, 0.8)', 'rgba(248, 113, 113, 0.1)');
+    });
+</script>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+
+{% block title %}History — VitalSync{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-700 mb-0"><i class="bi bi-clock-history me-2"></i>Health History</h2>
+        <a href="{{ url_for('user.dashboard') }}" class="btn btn-outline-secondary rounded-pill btn-sm px-3">
+            <i class="bi bi-arrow-left me-1"></i>Dashboard
+        </a>
+    </div>
+
+    {% if logs %}
+    <div class="row g-4">
+        {% for log in logs %}
+        <div class="col-12">
+            <div class="glass-card p-4 history-card" id="log-{{ loop.index }}">
+                <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <div>
+                        <h5 class="fw-600 mb-1">{{ log.date }}</h5>
+                        {% if log.score is not none %}
+                        <span class="badge rounded-pill px-3 py-1
+                            {% if log.status == 'excellent' %}bg-success{% elif log.status == 'good' %}bg-info{% else %}bg-warning text-dark{% endif %}">
+                            Score: {{ log.score }} — {{ log.status | replace('_', ' ') | title }}
+                        </span>
+                        {% endif %}
+                    </div>
+                    {% if log.urgent %}
+                    <span class="badge bg-danger rounded-pill px-3 py-1">
+                        <i class="bi bi-exclamation-triangle-fill me-1"></i>Urgent
+                    </span>
+                    {% endif %}
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-6 col-md-3">
+                        <div class="metric-pill">
+                            <i class="bi bi-moon-stars-fill text-purple"></i>
+                            <span>{{ log.sleep_hours }}h sleep</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="metric-pill">
+                            <i class="bi bi-shoe-fill text-warning"></i>
+                            <span>{{ '{:,}'.format(log.steps) }} steps</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="metric-pill">
+                            <i class="bi bi-fire text-danger"></i>
+                            <span>{{ '{:,}'.format(log.calories) }} cal</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="metric-pill">
+                            <i class="bi bi-droplet-fill text-info"></i>
+                            <span>{{ '{:,}'.format(log.water_ml) }}ml water</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="metric-pill">
+                            <i class="bi bi-lightning-fill text-danger"></i>
+                            <span>Stress {{ log.stress_level }}/10</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="metric-pill">
+                            <i class="bi bi-emoji-smile-fill text-info"></i>
+                            <span>Mood {{ log.mood }}/10</span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if log.suggestion %}
+                <div class="suggestion-strip {% if log.urgent %}urgent{% endif %}">
+                    <i class="bi {% if log.urgent %}bi-exclamation-octagon-fill{% else %}bi-lightbulb-fill{% endif %} me-2"></i>
+                    {{ log.suggestion }}
+                    {% if log.urgent %}
+                        <strong class="d-block mt-1 text-danger"><i class="bi bi-hospital me-1"></i>We suggest seeing a doctor.</strong>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if pagination.has_prev or pagination.has_next %}
+    <nav class="mt-4 d-flex justify-content-center" id="history-pagination">
+        <ul class="pagination pagination-sm">
+            {% if pagination.has_prev %}
+            <li class="page-item">
+                <a class="page-link glass-page-link" href="{{ url_for('user.history', page=pagination.prev_num) }}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+            {% endif %}
+            {% for p in pagination.iter_pages() %}
+                {% if p %}
+                <li class="page-item {% if p == pagination.page %}active{% endif %}">
+                    <a class="page-link glass-page-link" href="{{ url_for('user.history', page=p) }}">{{ p }}</a>
+                </li>
+                {% else %}
+                <li class="page-item disabled"><span class="page-link glass-page-link">…</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if pagination.has_next %}
+            <li class="page-item">
+                <a class="page-link glass-page-link" href="{{ url_for('user.history', page=pagination.next_num) }}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+
+    {% else %}
+    <div class="glass-card p-5 text-center" id="empty-history">
+        <i class="bi bi-journal-medical display-1 text-muted mb-3 d-block"></i>
+        <h5 class="fw-600 mb-2">No health logs yet</h5>
+        <p class="text-muted mb-3">Start by taking your first daily quiz.</p>
+        <a href="{{ url_for('user.quiz') }}" class="btn btn-primary rounded-pill px-4 glow-btn">
+            <i class="bi bi-pencil-square me-1"></i>Take Quiz
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

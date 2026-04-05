@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Daily Health Quiz — VitalSync{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card p-4 p-md-5 fade-in">
+            <div class="text-center mb-4">
+                <h2 class="fw-700 mb-1"><i class="bi bi-clipboard2-pulse me-2"></i>Daily Health Quiz</h2>
+                <p class="text-muted small">Answer honestly for the most accurate health insights</p>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress mb-4 glass-progress" style="height: 6px;" id="quiz-progress">
+                <div class="progress-bar bg-primary" role="progressbar" style="width: 0%" id="quiz-progress-bar"></div>
+            </div>
+
+            <form method="POST" action="{{ url_for('user.quiz') }}" id="quiz-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <!-- Step 1: Sleep -->
+                <div class="quiz-step active" data-step="1" id="step-1">
+                    <div class="step-header mb-4">
+                        <span class="step-badge">Step 1 of 5</span>
+                        <h4 class="fw-600 mt-2"><i class="bi bi-moon-stars-fill me-2 text-purple"></i>Sleep</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="sleep_hours" class="form-label small fw-500">Hours Slept</label>
+                            <input type="number" class="form-control glass-input" id="sleep_hours" name="sleep_hours"
+                                   min="0" max="24" step="0.5" value="7" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="sleep_time" class="form-label small fw-500">Bedtime</label>
+                            <input type="time" class="form-control glass-input" id="sleep_time" name="sleep_time" value="23:00">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="wake_time" class="form-label small fw-500">Wake Time</label>
+                            <input type="time" class="form-control glass-input" id="wake_time" name="wake_time" value="07:00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Activity -->
+                <div class="quiz-step" data-step="2" id="step-2">
+                    <div class="step-header mb-4">
+                        <span class="step-badge">Step 2 of 5</span>
+                        <h4 class="fw-600 mt-2"><i class="bi bi-activity me-2 text-warning"></i>Activity</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="steps" class="form-label small fw-500">Steps Taken</label>
+                            <input type="number" class="form-control glass-input" id="steps" name="steps"
+                                   min="0" max="100000" value="5000" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="exercise_minutes" class="form-label small fw-500">Exercise (minutes)</label>
+                            <input type="number" class="form-control glass-input" id="exercise_minutes" name="exercise_minutes"
+                                   min="0" max="480" value="30">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="outdoor_minutes" class="form-label small fw-500">Outdoor Time (minutes)</label>
+                            <input type="number" class="form-control glass-input" id="outdoor_minutes" name="outdoor_minutes"
+                                   min="0" max="480" value="30">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="sedentary_hours" class="form-label small fw-500">Sedentary Hours</label>
+                            <input type="number" class="form-control glass-input" id="sedentary_hours" name="sedentary_hours"
+                                   min="0" max="24" step="0.5" value="6">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="screen_time_hours" class="form-label small fw-500">Screen Time (hours)</label>
+                            <input type="number" class="form-control glass-input" id="screen_time_hours" name="screen_time_hours"
+                                   min="0" max="24" step="0.5" value="4">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3: Nutrition -->
+                <div class="quiz-step" data-step="3" id="step-3">
+                    <div class="step-header mb-4">
+                        <span class="step-badge">Step 3 of 5</span>
+                        <h4 class="fw-600 mt-2"><i class="bi bi-cup-hot-fill me-2 text-success"></i>Nutrition</h4>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="calories" class="form-label small fw-500">Calories Consumed</label>
+                            <input type="number" class="form-control glass-input" id="calories" name="calories"
+                                   min="0" max="10000" value="2000" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="water_ml" class="form-label small fw-500">Water Intake (ml)</label>
+                            <input type="number" class="form-control glass-input" id="water_ml" name="water_ml"
+                                   min="0" max="10000" step="100" value="2000" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4: Meal Timing -->
+                <div class="quiz-step" data-step="4" id="step-4">
+                    <div class="step-header mb-4">
+                        <span class="step-badge">Step 4 of 5</span>
+                        <h4 class="fw-600 mt-2"><i class="bi bi-clock-fill me-2 text-info"></i>Meal Timing</h4>
+                    </div>
+                    <p class="text-muted small mb-3">Leave blank if you skipped a meal</p>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="breakfast_time" class="form-label small fw-500">Breakfast Time</label>
+                            <input type="time" class="form-control glass-input" id="breakfast_time" name="breakfast_time" value="08:00">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="lunch_time" class="form-label small fw-500">Lunch Time</label>
+                            <input type="time" class="form-control glass-input" id="lunch_time" name="lunch_time" value="13:00">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="dinner_time" class="form-label small fw-500">Dinner Time</label>
+                            <input type="time" class="form-control glass-input" id="dinner_time" name="dinner_time" value="19:30">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Wellbeing -->
+                <div class="quiz-step" data-step="5" id="step-5">
+                    <div class="step-header mb-4">
+                        <span class="step-badge">Step 5 of 5</span>
+                        <h4 class="fw-600 mt-2"><i class="bi bi-emoji-smile-fill me-2 text-primary"></i>Wellbeing</h4>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <label for="stress_level" class="form-label small fw-500">
+                                Stress Level: <span id="stress-value" class="text-primary fw-600">5</span>/10
+                            </label>
+                            <input type="range" class="form-range custom-range" id="stress_level" name="stress_level"
+                                   min="1" max="10" value="5">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Relaxed</small>
+                                <small class="text-muted">Very Stressed</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="mood" class="form-label small fw-500">
+                                Mood: <span id="mood-value" class="text-primary fw-600">5</span>/10
+                            </label>
+                            <input type="range" class="form-range custom-range" id="mood" name="mood"
+                                   min="1" max="10" value="5">
+                            <div class="d-flex justify-content-between">
+                                <small class="text-muted">Very Low</small>
+                                <small class="text-muted">Excellent</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <div class="d-flex justify-content-between mt-4 pt-3 border-top border-secondary" id="quiz-nav">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" id="prev-btn" disabled>
+                        <i class="bi bi-arrow-left me-1"></i>Previous
+                    </button>
+                    <button type="button" class="btn btn-primary rounded-pill px-4 glow-btn" id="next-btn">
+                        Next<i class="bi bi-arrow-right ms-1"></i>
+                    </button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4 glow-btn d-none" id="submit-btn">
+                        <i class="bi bi-check-circle-fill me-1"></i>Submit Quiz
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function() {
+    const totalSteps = 5;
+    let currentStep = 1;
+
+    const steps = document.querySelectorAll('.quiz-step');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const submitBtn = document.getElementById('submit-btn');
+    const progressBar = document.getElementById('quiz-progress-bar');
+
+    function showStep(n) {
+        steps.forEach(s => s.classList.remove('active'));
+        document.querySelector(`[data-step="${n}"]`).classList.add('active');
+        progressBar.style.width = ((n / totalSteps) * 100) + '%';
+        prevBtn.disabled = (n === 1);
+        if (n === totalSteps) {
+            nextBtn.classList.add('d-none');
+            submitBtn.classList.remove('d-none');
+        } else {
+            nextBtn.classList.remove('d-none');
+            submitBtn.classList.add('d-none');
+        }
+    }
+
+    nextBtn.addEventListener('click', () => {
+        if (currentStep < totalSteps) { currentStep++; showStep(currentStep); }
+    });
+    prevBtn.addEventListener('click', () => {
+        if (currentStep > 1) { currentStep--; showStep(currentStep); }
+    });
+
+    // Range sliders
+    document.getElementById('stress_level').addEventListener('input', function() {
+        document.getElementById('stress-value').textContent = this.value;
+    });
+    document.getElementById('mood').addEventListener('input', function() {
+        document.getElementById('mood-value').textContent = this.value;
+    });
+
+    showStep(1);
+})();
+</script>
+{% endblock %}

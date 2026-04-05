@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Login — VitalSync{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-md-5 col-lg-4">
+        <div class="glass-card auth-card p-4 p-md-5">
+            <div class="text-center mb-4">
+                <div class="auth-icon-wrap mb-3">
+                    <i class="bi bi-person-circle auth-icon"></i>
+                </div>
+                <h2 class="fw-700 mb-1">Welcome Back</h2>
+                <p class="text-muted small">Sign in to your VitalSync account</p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login') }}" id="login-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="mb-3">
+                    <label for="email" class="form-label small fw-500">Email Address</label>
+                    <div class="input-group">
+                        <span class="input-group-text glass-input-icon"><i class="bi bi-envelope-fill"></i></span>
+                        <input type="email" class="form-control glass-input" id="email" name="email"
+                               placeholder="you@example.com" required autocomplete="email">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="password" class="form-label small fw-500">Password</label>
+                    <div class="input-group">
+                        <span class="input-group-text glass-input-icon"><i class="bi bi-lock-fill"></i></span>
+                        <input type="password" class="form-control glass-input" id="password" name="password"
+                               placeholder="Enter your password" required autocomplete="current-password">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 rounded-pill glow-btn py-2" id="login-submit">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+                </button>
+            </form>
+
+            <div class="text-center mt-4">
+                <p class="text-muted small mb-0">
+                    Don't have an account?
+                    <a href="{{ url_for('auth.register') }}" class="text-primary fw-500">Create one</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
