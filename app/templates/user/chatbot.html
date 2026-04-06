@@ -38,6 +38,7 @@
             <!-- Input Area -->
             <div class="chatbot-input p-3">
                 <form id="chat-form" class="d-flex gap-2">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <input type="text" class="form-control glass-input" id="chat-input"
                            placeholder="Ask about your health..." autocomplete="off" required>
                     <button type="submit" class="btn btn-primary rounded-pill px-3 glow-btn" id="chat-send">

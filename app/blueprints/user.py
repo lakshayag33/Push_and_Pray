@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, current_user
 from app.models import db, HealthLog, Suggestion, User, ReviewerInvite
@@ -84,12 +84,27 @@ def quiz():
 
     if request.method == 'POST':
         try:
+            sleep_time_str = request.form.get('sleep_time', '')
+            wake_time_str = request.form.get('wake_time', '')
+            sleep_hours = 0.0
+            
+            if sleep_time_str and wake_time_str:
+                try:
+                    s_dt = datetime.strptime(sleep_time_str, "%H:%M")
+                    w_dt = datetime.strptime(wake_time_str, "%H:%M")
+                    diff = (w_dt - s_dt).total_seconds() / 3600.0
+                    if diff < 0:
+                        diff += 24.0
+                    sleep_hours = round(diff, 1)
+                except ValueError:
+                    pass
+
             log = HealthLog(
                 user_id=current_user.id,
                 date=today,
-                sleep_hours=float(request.form.get('sleep_hours', 0)),
-                sleep_time=request.form.get('sleep_time', '') or None,
-                wake_time=request.form.get('wake_time', '') or None,
+                sleep_hours=sleep_hours,
+                sleep_time=sleep_time_str or None,
+                wake_time=wake_time_str or None,
                 screen_time_hours=float(request.form.get('screen_time_hours', 0)),
                 steps=int(request.form.get('steps', 0)),
                 calories=int(request.form.get('calories', 0)),
@@ -199,7 +214,7 @@ def invite_reviewer():
 
     existing = ReviewerInvite.query.filter_by(
         user_id=current_user.id, reviewer_id=reviewer.id
-    ).filter(ReviewerInvite.status != 'revoked').first()
+    ).filter(ReviewerInvite.status.notin_(['revoked', 'rejected'])).first()
 
     if existing:
         flash('You already have an active invitation with this reviewer.', 'warning')
@@ -227,4 +242,21 @@ def revoke_invite(invite_id):
     invite.status = 'revoked'
     db.session.commit()
     flash('Invitation revoked.', 'info')
+    return redirect(url_for('user.dashboard'))
+
+
+@user_bp.route('/clear_invite/<int:invite_id>', methods=['POST'])
+@login_required
+def clear_invite(invite_id):
+    if current_user.role != 'user':
+        return redirect(url_for('user.dashboard'))
+
+    invite = ReviewerInvite.query.get_or_404(invite_id)
+    if invite.user_id != current_user.id or invite.status not in ['revoked', 'rejected']:
+        flash('Unauthorized action or invoice not in valid state to be cleared.', 'danger')
+        return redirect(url_for('user.dashboard'))
+
+    db.session.delete(invite)
+    db.session.commit()
+    flash('Invitation cleared.', 'success')
     return redirect(url_for('user.dashboard'))

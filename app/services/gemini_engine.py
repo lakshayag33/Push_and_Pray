@@ -84,7 +84,7 @@ def _get_model():
         return None
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel(
-        model_name='models/gemini-flash-latest',
+        model_name='models/gemini-2.0-flash',
         system_instruction=MASTER_PROMPT
     )
     return model

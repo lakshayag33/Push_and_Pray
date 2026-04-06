@@ -91,7 +91,7 @@ def decline_invite(invite_id):
     invite = ReviewerInvite.query.get_or_404(invite_id)
     if invite.reviewer_id != current_user.id:
         abort(403)
-    invite.status = 'revoked'
+    invite.status = 'rejected'
     db.session.commit()
     flash('Invitation declined.', 'info')
     return redirect(url_for('reviewer.dashboard'))
