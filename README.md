@@ -292,8 +292,3 @@ On first run, the app seeds a default admin account:
 
 This project is part of the **inCSEption26** hackathon submission.
 
----
-
-<p align="center">
-  Built with ❤️ using Flask, Gemini AI, and Chart.js
-</p>
