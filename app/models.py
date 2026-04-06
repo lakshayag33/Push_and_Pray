@@ -15,12 +15,19 @@ class User(UserMixin, db.Model):
     role = db.Column(db.String(20), nullable=False, default='user')  # user | reviewer | admin
     reviewer_status = db.Column(db.String(20), nullable=True)  # pending | active | rejected | null
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    api_token = db.Column(db.String(64), unique=True, nullable=True)
 
     health_logs = db.relationship('HealthLog', backref='user', lazy='dynamic')
     suggestions = db.relationship('Suggestion', backref='user', lazy='dynamic')
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
+
+    def generate_api_token(self):
+        import secrets
+        self.api_token = secrets.token_urlsafe(32)
+        db.session.commit()
+        return self.api_token
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)

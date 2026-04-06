@@ -67,6 +67,7 @@ def register():
 
         db.session.add(user)
         db.session.commit()
+        user.generate_api_token()
 
         if role == 'reviewer':
             flash('Account created! Your reviewer request is pending admin approval.', 'info')

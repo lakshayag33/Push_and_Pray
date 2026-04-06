@@ -2,6 +2,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
+from flask_cors import CORS
 
 from app.config import Config
 from app.models import db, User
@@ -34,15 +35,21 @@ def create_app():
     from app.blueprints.reviewer import reviewer_bp
     from app.blueprints.admin import admin_bp
     from app.blueprints.api import api_bp
+    from app.blueprints.mobile_api import mobile_api
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(user_bp)
     app.register_blueprint(reviewer_bp)
     app.register_blueprint(admin_bp)
     app.register_blueprint(api_bp)
+    app.register_blueprint(mobile_api)
 
-    # Exempt API blueprint from CSRF (uses JSON, not form submissions)
+    # Exempt API blueprints from CSRF (uses JSON, not form submissions)
     csrf.exempt(api_bp)
+    csrf.exempt(mobile_api)
+
+    # Enable CORS for mobile API
+    CORS(app, resources={r"/api/mobile/*": {"origins": "*"}})
 
     # Create DB tables and seed admin
     with app.app_context():
